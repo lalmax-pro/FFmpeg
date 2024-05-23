@@ -805,6 +805,8 @@ static const StreamType ISO_types[] = {
     { 0xd1, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_DIRAC      },
     { 0xd2, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_AVS2       },
     { 0xea, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_VC1        },
+    { 0x90, AVMEDIA_TYPE_AUDIO, AV_CODEC_ID_PCM_ALAW   },
+    { 0x91, AVMEDIA_TYPE_AUDIO, AV_CODEC_ID_PCM_MULAW  },
     { 0 },
 };
 
@@ -879,6 +881,12 @@ static void mpegts_find_stream_type(AVStream *st,
                 st->codecpar->codec_type = types->codec_type;
                 st->codecpar->codec_id   = types->codec_id;
                 st->internal->need_context_update = 1;
+            }
+
+            if (st->codecpar->codec_id == AV_CODEC_ID_PCM_ALAW || st->codecpar->codec_id == AV_CODEC_ID_PCM_MULAW) {
+                st->codecpar->channels = 1;
+                st->codecpar->channel_layout = AV_CH_LAYOUT_MONO;
+                st->codecpar->sample_rate = 8000;
             }
             st->request_probe        = 0;
             return;
